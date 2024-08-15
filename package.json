@@ -1,0 +1,23 @@
+{
+  "name": "shopecommerce_v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sever.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
+  },
+  "dependencies": {
+    "compression": "^1.7.4"
+  }
+}
