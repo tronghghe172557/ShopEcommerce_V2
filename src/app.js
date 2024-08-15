@@ -11,6 +11,8 @@ app.use(compression()) // nén băng thông
 
 // init db
 require('./dbs/init.mongodb.lvPro')
+const { countConnect } = require('./helpers/check.connect')
+countConnect();
 // init routes
 app.get('/', (req, res, next) => {
     return res.status(200).json({
