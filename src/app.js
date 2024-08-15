@@ -10,7 +10,7 @@ app.use(helmet()) // giấu thông tin mình dùng gì để code
 app.use(compression()) // nén băng thông
 
 // init db
-
+require('./dbs/init.mongodb.lvPro')
 // init routes
 app.get('/', (req, res, next) => {
     return res.status(200).json({
