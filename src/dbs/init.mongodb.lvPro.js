@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const { db: { host, name, port } } = require('../configs/config.mongodb')
 const connectString = `mongodb://${host}:${port}/${name}`;
 
+console.log(`mongodb://${host}:${port}/${name}`)
+
 class Database {
   constructor() {
     this.connect();

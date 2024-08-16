@@ -1,13 +1,28 @@
 // lv0
-const config = {
+const dev = {
   app: {
-    port: 3000,
+    port: process.env.DEV_APP_PORT || 3052,
   },
   db: {
-    host: "localhost",
-    port: 27017,
-    name: "ShopDEV2",
+    host: process.env.DEV_DB_HOST  || 'localhost',
+    port: process.env.DEV_DB_POST  || 27017,
+    name: process.env.DEV_DB_NAME  || 'ShopDEV2',
   },
 };
 
-module.exports = config;
+// lv01
+const pro = {
+  app: {
+    port: process.env.PRO_APP_PORT || 3000,
+  },
+  db: {
+    host: process.env.PRO_DB_HOST || 'localhost',
+    port: process.env.PRO_DB_POST || 27017,
+    name: process.env.PRO_DB_NAME || 'dbPro',
+  },
+};
+
+const config = { dev, pro };
+const env = process.env.NODE_ENV || 'dev'
+
+module.exports = config[env];
