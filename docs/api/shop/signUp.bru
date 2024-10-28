@@ -1,0 +1,20 @@
+meta {
+  name: Sign Up
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3052/v1/api/shop/signUP
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name":"Shop Trong",
+    "email":"hoanggiatrang01@gmail.com",
+    "password":"abc123"
+  }
+}
+
