@@ -1,7 +1,7 @@
 const mongoose = require("mongoose"); // Erase if already required
 
 const DOCUMENT_NAME = "Shop";
-const COLLECTION_NAME = "shops";
+const COLLECTION_NAME = "Shops";
 // Declare the Schema of the Mongo model
 var shopSchema = new mongoose.Schema(
   {
@@ -29,7 +29,7 @@ var shopSchema = new mongoose.Schema(
       default: false,
     },
     roles: {
-      type: String,
+      type: Array,
       default: [],
     },
   },

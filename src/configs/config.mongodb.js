@@ -6,7 +6,7 @@ const dev = {
   db: {
     host: process.env.DEV_DB_HOST  || 'localhost',
     port: process.env.DEV_DB_POST  || 27017,
-    name: process.env.DEV_DB_NAME  || 'ShopDEV2',
+    name: process.env.DEV_DB_NAME  || 'ShopDEV3',
   },
 };
 
