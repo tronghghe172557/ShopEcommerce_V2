@@ -1,5 +1,7 @@
 const JWT = require("jsonwebtoken");
 const { asyncHandler } = require("../helpers/asyncHandle");
+const { AuthFailureError, NotFoundError } = require("../core/error.response");
+const { findKeyStoreByUserId } = require("../services/keyToken.service");
 
 const HEADER = {
   API_KEY: "x-api-key",
@@ -43,7 +45,41 @@ const authentication = asyncHandler(async (req, res, next) => {
     6. oke all -> return next()
   */
 
-      const userId = req.headers[HEADER.CLIENT_ID];
+  // 1.
+  const userId = req.headers[HEADER.CLIENT_ID];
+
+  if (!userId) {
+    throw new AuthFailureError("Not found userId in authentication");
+  }
+
+  // 2.
+  const keyStore = await findKeyStoreByUserId(userId);
+  if (!keyStore) {
+    throw new NotFoundError("Invalid keyStore in authentication");
+  }
+
+  // 3.
+  const accessToken = req.headers[HEADER.AUTHORIZATION];
+  if (!keyStore) {
+    throw new NotFoundError("Invalid request in authentication");
+  }
+
+  // 4.
+  try {
+    const decodeUser = await JWT.verify(accessToken, keyStore.publicKey);
+    if (userId != decodeUser._id) {
+      throw new AuthFailureError(
+        "UserId is not similar decodeUser in authentication"
+      );
+    }
+
+    // 5.
+    req.keyStore = keyStore;
+    return next();
+  } catch (error) {
+    console.log("in authentication error::", error);
+    throw `authentication::${error}`;
+  }
 });
 
-module.exports = { createTokenPair };
+module.exports = { createTokenPair, authentication };
