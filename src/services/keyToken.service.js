@@ -39,9 +39,45 @@ class keyTokenService {
     return keyStore;
   } 
 
+  static findByRefreshToken = async(refreshToken) => {
+    const keyStore =  await keytokenModel.findOne({ refreshToken: refreshToken }).lean();
+    return keyStore;
+  } 
+
+
+  static findByRefreshTokenUsed = async(refreshToken) => {
+    const keyStore =  await keytokenModel.findOne({ refreshTokensUsed: refreshToken }).lean();
+    return keyStore;
+  } 
+
+  static updateKeyStore = async (userId, newToken, tokenUsed) => {
+    console.log("updateKeyStore::", userId, newToken, tokenUsed)
+    const filter = { user: userId },
+      update = {
+        $set: {
+          refreshToken: newToken,
+          updatedAt: new Date(),
+        },
+        $addToSet: {
+          refreshTokensUsed: tokenUsed, // da duoc su dung de lay token moi
+        }
+      }
+
+      const keyStore = await keytokenModel.findOneAndUpdate(
+        filter,
+        update,
+        { new: true }
+      );
+
+      return keyStore;
+  }
+
   static removeKeyById = async (id) => {
     return await keytokenModel.findByIdAndDelete( id )
-  
+  }
+
+  static deleteKeyByUserId = async (userId) => {
+    return await keytokenModel.findByIdAndDelete( {userId: userId } )
   }
 }
 module.exports = keyTokenService;
