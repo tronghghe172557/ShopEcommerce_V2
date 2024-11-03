@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    product_thumbnail: {
+    product_thumb: {
       type: String,
       required: true,
     },
@@ -34,7 +34,7 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Shop",
     },
-    product_attribute: {
+    product_attributes: {
       type: mongoose.Schema.Types.Mixed,
       required: true,
     },
