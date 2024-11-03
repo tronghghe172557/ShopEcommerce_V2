@@ -36,8 +36,8 @@ class Product {
         this.product_attributes = product_attributes;
     }
 
-    async createProduct() {
-        return await product.create(this) // this: instance (ví dụ) of Product
+    async createProduct( product_id ) {
+        return await product.create({ ...this, _id: product_id}) // this: instance (ví dụ) of Product
     }
 }
 
@@ -46,10 +46,13 @@ class Clothing extends Product {
     // @override
     async createProduct() {
         // create attribute first
-        const newClothing = await clothing.create(this.product_attributes) // this: is Product instance (ví dụ)
+        const newClothing = await clothing.create({
+            ...this.product_attributes,
+            product_shop: this.product_shop
+        }) // this: is Product instance (ví dụ)
         if(!newClothing) throw new BadRequestError('Create new Clothing error in product.service.js')
         // create product include newClothing
-        const newProduct = await super.createProduct() // chính là thằng Product
+        const newProduct = await super.createProduct(newClothing._id) // chính là thằng Product
         if(!newProduct) throw new BadRequestError('Create new Product error in product.service.js')
         return newProduct;
     }
@@ -60,10 +63,13 @@ class Electronic extends Product {
     // @override
     async createProduct() {
         // create attribute first
-        const newElectronic = await electronic.create(this.product_attributes) // this: is Product instance
+        const newElectronic = await electronic.create({
+            ...this.product_attributes,
+            product_shop: this.product_shop
+        }) // this: is Product instance
         if(!newElectronic) throw new BadRequestError('Create new Electronics error in product.service.js')
         // create product include newElectronic 
-        const newProduct = await super.createProduct() // chính là thằng Product
+        const newProduct = await super.createProduct(newElectronic._id) // chính là thằng Product
         if(!newProduct) throw new BadRequestError('Create new Product error in product.service.js')
         return newProduct;
     }

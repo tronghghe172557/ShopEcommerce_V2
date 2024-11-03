@@ -148,6 +148,7 @@ const authenticationV2 = asyncHandler(async (req, res, next) => {
 
     // 5.
     req.keyStore = keyStore;
+    req.user = decodeUser;
     return next();
   } catch (error) {
     console.log("in authenticationV2 error::", error);
