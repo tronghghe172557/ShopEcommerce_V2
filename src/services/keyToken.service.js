@@ -77,7 +77,7 @@ class keyTokenService {
   }
 
   static deleteKeyByUserId = async (userId) => {
-    return await keytokenModel.findByIdAndDelete( {userId: userId } )
+    return await keytokenModel.findOneAndDelete( {user: userId } )
   }
 }
 module.exports = keyTokenService;
