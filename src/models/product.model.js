@@ -1,5 +1,6 @@
+const { max } = require("lodash");
 const mongoose = require("mongoose"); // Erase if already required
-
+const slugify = require("slugify")
 const DOCUMENT_NAME = "Product";
 const COLLECTION_NAME = "Products";
 
@@ -38,12 +39,47 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       required: true,
     },
+    // more
+    product_ratingAverage: {
+      type: Number,
+      default: 4,
+      min: [1, "Rating must be above 1.0"],
+      max : [5, "Rating must be below 5.0"],
+      // 4.333334 => 4.3
+      set: (val) => Math.round(val * 10) / 10,
+    },
+    product_slug: {
+      type: String,
+    },
+    product_variants: {
+      type: Array,
+      default: [],
+    },
+    isDraft: {
+      type: Boolean,
+      default: true,
+      index: true,
+      select: false, // hide this field from the query result
+    },
+    isPublished: {
+      type: Boolean,
+      default: false,
+      index: true,
+      select: false, // hide this field from the query result
+    },
   },
   {
     timestamps: true,
     collection: COLLECTION_NAME,
   }
 );
+
+// Document middleware for slugify 
+// the second argument is a function - not an arrow function
+productSchema.pre("save", function (next) {
+  this.product_slug = slugify(this.product_name, { lower: true });
+  next(); 
+})
 
 // define the product type
 const clothingSchema = new mongoose.Schema({
