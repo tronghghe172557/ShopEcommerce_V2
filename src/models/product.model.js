@@ -74,6 +74,12 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+// create index for searching
+productSchema.index({
+  product_name: "text",
+  product_description: "text",
+});
+
 // Document middleware for slugify 
 // the second argument is a function - not an arrow function
 productSchema.pre("save", function (next) {

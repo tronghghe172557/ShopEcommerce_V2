@@ -45,6 +45,34 @@ class ProductController {
         }).send(res)
     }
 
+    /**
+     * @description Unpublish a product owned by the shop
+     * @route       PUT /api/products/unpublish/:id
+     * @access      Private (Shop owners only)
+     * @returns     {JSON} - JSON response indicating the product has been unpublished
+     * @example
+     * // To unpublish a product:
+     * // Endpoint: PUT /api/products/unpublish/:id
+     * // Headers:
+     * //   Authorization: Bearer <token>
+     * // Path Parameters:
+     * //   id - The ID of the product to unpublish
+     * // Response:
+     * //   {
+     * //     "message": "unPublishProductByShop success in ProductController",
+     * //     "metadata": { ... } // Details of the unpublished product
+     * //   }
+     */    
+    unPublishProductByShop = async ( req, res, next ) => {
+        new SuccessResponse({
+            message: 'unPublishProductByShop success in ProductController',
+            metadata: await ProductServiceV2.unPublishProductByShop({
+                product_shop: req.user._id,
+                product_id: req.params.id
+            }),
+        }).send(res) 
+    }
+
     // QUERY //
     /**
      * @description Get all draft product for shop
@@ -79,6 +107,13 @@ class ProductController {
             metadata: await ProductServiceV2.findAllPublishForShop({
                 product_shop: req.user._id,
             }),
+        }).send(res)
+    }
+
+    getListSearchProduct = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Get list search product success in ProductController',
+            metadata: await ProductServiceV2.searchProductsByUser(req.params),
         }).send(res)
     }
     // END QUERY //
