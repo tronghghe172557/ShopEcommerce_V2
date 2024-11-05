@@ -1,6 +1,6 @@
 const { product, clothing, electronic, furniture } = require("../models/product.model");
 const { BadRequestError } = require('../core/error.response');
-const { findAllDraftProduct } = require("../models/repositories/product.repo");
+const { findAllDraftProduct, publishProductByShop, findAllPublishForShop } = require("../models/repositories/product.repo");
 
 // define Factory class to create product
 class ProductFactory {
@@ -30,11 +30,24 @@ class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
-     // query //
-     static async findAllDraftProduct( {product_shop, limit, skip = 0}) {
+    // PUT //
+    static async publishProductByShop({ product_shop, product_id }) {
+        return await publishProductByShop({ product_shop, product_id })
+    }
+    // END PUT //
+
+     // QUERY //
+    static async findAllDraftProduct( {product_shop, limit, skip = 0}) {
         const query = {product_shop, isDraft: true}
         return await findAllDraftProduct({ query, limit, skip })
     }
+
+    static async findAllPublishForShop({ product_shop, limit = 50, skip = 0 }) {
+        const query = { product_shop, isPublished: true }
+        return await findAllPublishForShop({ query, limit, skip })
+    }
+     // END QUERY //
+
 }
 
 // define base product class
