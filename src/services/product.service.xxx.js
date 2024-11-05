@@ -1,5 +1,6 @@
 const { product, clothing, electronic, furniture } = require("../models/product.model");
-const { BadRequestError } = require('../core/error.response')
+const { BadRequestError } = require('../core/error.response');
+const { findAllDraftProduct } = require("../models/repositories/product.repo");
 
 // define Factory class to create product
 class ProductFactory {
@@ -27,6 +28,12 @@ class ProductFactory {
         
         // productClass(payload) ->Ex: new Clothing(payload)
         return new productClass(payload).createProduct()
+    }
+
+     // query //
+     static async findAllDraftProduct( {product_shop, limit, skip = 0}) {
+        const query = {product_shop, isDraft: true}
+        return await findAllDraftProduct({ query, limit, skip })
     }
 }
 
