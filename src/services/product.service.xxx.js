@@ -1,6 +1,6 @@
 const { product, clothing, electronic, furniture } = require("../models/product.model");
 const { BadRequestError } = require('../core/error.response');
-const { findAllDraftProduct, publishProductByShop, findAllPublishForShop, unPublishProductByShop, searchProductsByUser, findAllProduct, findProduct } = require("../models/repositories/product.repo");
+const { findAllDraftProduct, publishProductByShop, findAllPublishForShop, unPublishProductByShop, searchProductsByUser, findAllProduct, findProduct, updateProductById } = require("../models/repositories/product.repo");
 
 // define Factory class to create product
 class ProductFactory {
@@ -30,13 +30,13 @@ class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
-    static async updateProduct(type, payload) {
+    static async updateProduct(type, productId, payload) {
         const productClass = ProductFactory.productRegistry[type]
 
-        if(!productClass) throw new BadRequestError(`Invalid Product Types: ${type} in ProductFactory`)
+        if(!productClass) throw new BadRequestError(`Invalid Product Types: ${type} in updateProduct in ProductFactory`)
         
         // productClass(payload) ->Ex: new Clothing(payload)
-        return new productClass(payload).createProduct()
+        return new productClass(payload).updateProduct(productId) // this -> payload
     }
 
     // PUT //
@@ -98,6 +98,11 @@ class Product {
     async createProduct( product_id ) {
         return await product.create({ ...this, _id: product_id}) // this: instance (ví dụ) of Product
     }
+
+    // update product
+    async updateProduct( productId, bodyUpdate ) {
+        return await updateProductById({ productId, bodyUpdate, model: product })
+    }
 }
 
 // Define sub-class for different product types Clothing
@@ -114,6 +119,21 @@ class Clothing extends Product {
         const newProduct = await super.createProduct(newClothing._id) // chính là thằng Product
         if(!newProduct) throw new BadRequestError('Create new Product error in product.service.js')
         return newProduct;
+    }
+
+    // @override
+    async updateProduct( productId ) {
+        // 1. Remove fields that are null or undefined
+        const objectParams = this
+        // 2. check update product or update additional attribute
+        if(objectParams.product_attributes) {
+            // update child
+            await updateProductById({ productId, bodyUpdate: objectParams.product_attributes, model: clothing })
+        }
+        // 3.
+        const updateProduct = await super.updateProduct(productId, objectParams)
+    
+        return updateProduct
     }
 }
 
@@ -132,9 +152,24 @@ class Electronic extends Product {
         if(!newProduct) throw new BadRequestError('Create new Product error in product.service.js')
         return newProduct;
     }
+
+    // @override
+    async updateProduct( productId ) {
+        // 1. Remove fields that are null or undefined
+        const objectParams = this
+        // 2. check update product or update additional attribute
+        if(objectParams.product_attributes) {
+            // update child
+            await updateProductById({ productId, bodyUpdate: objectParams.product_attributes, model: electronic })
+        }
+        // 3.
+        const updateProduct = await super.updateProduct(productId, objectParams)
+    
+        return updateProduct
+    }
 }
 
-// Define sub-class for different product types Electronics
+// Define sub-class for different product types Furniture
 class Furniture extends Product {
     // @override
     async createProduct() {furniture
@@ -148,6 +183,22 @@ class Furniture extends Product {
         const newProduct = await super.createProduct(newFurniture._id) // chính là thằng Product
         if(!newProduct) throw new BadRequestError('Create new Product error in product.service.js')
         return newProduct;
+    }
+
+    // @override
+    async updateProduct( productId ) {
+        // 1. Remove fields that are null or undefined
+        const objectParams = this
+
+        // 2. check update product or update additional attribute
+        if(objectParams.product_attributes) {
+            // update child
+            await updateProductById({ productId, bodyUpdate: objectParams.product_attributes, model: furniture })
+        }
+        // 3.
+        const updateProduct = await super.updateProduct(productId, objectParams)
+    
+        return updateProduct
     }
 }
 

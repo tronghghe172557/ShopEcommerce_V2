@@ -134,5 +134,27 @@ class ProductController {
     }
     // END QUERY //
 
+    // update product
+    updateProduct = async(req, res, next) => {
+        // console.log("product_type::", req.body.product_type)
+        // console.log("productId::", req.params.productId)
+        // console.log("payload::", {
+        //     ...req.body,
+        //     product_shop: req.user._id, 
+        // } )
+        new SuccessResponse({
+            message: 'Update product success in ProductController',
+            metadata: await ProductServiceV2.updateProduct(
+                req.body.product_type, // -> product_type
+                req.params.productId, // -> product_id
+                // -> payload
+                {
+                    ...req.body,
+                    product_shop: req.user._id, 
+                }
+            ),
+        }).send(res)
+    }
+
 }
 module.exports = new ProductController(); // trả về các method của obj đó

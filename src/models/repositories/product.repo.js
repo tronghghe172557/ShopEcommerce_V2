@@ -79,6 +79,17 @@ const unPublishProductByShop = async ({ product_shop, product_id }) => {
 }
 // END POST //
 
+// PATCH //
+const updateProductById = async ({ productId, bodyUpdate, model, isNew = true }) => {
+    console.log("updateProductById::", productId, bodyUpdate, model)
+    return await model.findByIdAndUpdate(
+        productId,
+        bodyUpdate,
+        { new: isNew }
+    )
+}
+// END PATCH //
+
 
 // FUNC QUERY //
 const queryProduct = async ({ query, limit, skip }) => {
@@ -100,4 +111,5 @@ module.exports = {
     searchProductsByUser,
     findAllProduct,
     findProduct,
+    updateProductById,
 }
