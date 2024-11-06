@@ -90,6 +90,22 @@ class ProductController {
         }).send(res)
     }
 
+    findAllProducts = async(req, res, next) => { 
+        new SuccessResponse({
+            message: 'Get findAllProduct success in ProductController',
+            metadata: await ProductServiceV2.findAllProduct(req.params),
+        }).send(res)
+    }
+
+    findProduct = async(req, res, next) => { 
+        new SuccessResponse({
+            message: 'Get findProduct success in ProductController',
+            metadata: await ProductServiceV2.findProduct({
+                product_id: req.params.product_id,
+            }),
+        }).send(res)
+    }
+
      /**
      * @description Get all published products for the shop
      * @param {Number} limit - (Optional) Maximum number of products to return
