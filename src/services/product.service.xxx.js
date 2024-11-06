@@ -2,6 +2,7 @@ const { product, clothing, electronic, furniture } = require("../models/product.
 const { BadRequestError } = require('../core/error.response');
 const { findAllDraftProduct, publishProductByShop, findAllPublishForShop, unPublishProductByShop, searchProductsByUser, findAllProduct, findProduct, updateProductById, updateNestedObjectParse } = require("../models/repositories/product.repo");
 const { removeUndefinedObject } = require("../utils");
+const { insertInventory } = require("../models/repositories/inventory.repo");
 
 // define Factory class to create product
 class ProductFactory {
@@ -97,7 +98,17 @@ class Product {
     }
 
     async createProduct( product_id ) {
-        return await product.create({ ...this, _id: product_id}) // this: instance (ví dụ) of Product
+        const newProduct =  await product.create({ ...this, _id: product_id}) // this: instance (ví dụ) of Product
+        if(newProduct) {
+            // add product_stock in inventory collection
+            await insertInventory({
+                productId: newProduct._id,
+                shopId: this.product_shop,
+                stock: this.product_quantity
+            })
+        }
+
+        return newProduct
     }
 
     // update product
