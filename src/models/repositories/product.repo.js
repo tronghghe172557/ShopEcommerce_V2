@@ -100,6 +100,24 @@ const queryProduct = async ({ query, limit, skip }) => {
     .limit(limit)
     .lean()
 }
+
+const updateNestedObjectParse = obj => {
+    const final = {};
+    // thêm  || {}  trong Object.keys để ko bị lỗi -> Cannot convert undefined or null to object
+    Object.keys(obj || {} ).forEach( k => {
+        if(typeof obj[k] == 'object' && !Array.isArray(obj[k])) { // 'object' viết thường => 'Object'sai
+            const response = updateNestedObjectParse(obj[k])
+            // thêm  || {}  trong Object.keys để ko bị lỗi
+            Object.keys(response || {}).forEach( a => {
+                final[`${k}.${a}`] = response[a]
+            })
+        } else {
+            final[k] = obj[k]
+        }
+    })
+
+    return final
+}
 // FUNC QUERY //
 
 
@@ -112,4 +130,5 @@ module.exports = {
     findAllProduct,
     findProduct,
     updateProductById,
+    updateNestedObjectParse,
 }

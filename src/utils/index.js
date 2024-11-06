@@ -54,4 +54,32 @@ const getUnSelectData = ({ fields = [] }) => {
   return Object.fromEntries(fields.map((field) => [field, 0]));
 };
 
-module.exports = { getInfoData, getSelectData, getUnSelectData };   
+/**
+ * Loại bỏ các thuộc tính có giá trị undefined hoặc null khỏi một đối tượng.
+ * Nhưng chỉ loại bỏ được 1 cấp, không loại bỏ được nếu có object lồng bên trong.
+ * Hàm này sẽ duyệt qua tất cả các key của đối tượng và xóa các thuộc tính nếu giá trị của chúng là null hoặc undefined.
+ *
+ * @param {Object} obj - Đối tượng cần loại bỏ các thuộc tính undefined hoặc null.
+ * @returns {Object} - Đối tượng sau khi đã loại bỏ các thuộc tính có giá trị undefined hoặc null.
+ *
+ * @example
+ * // Ví dụ sử dụng:
+ * const originalObject = { name: 'John', age: null, email: undefined, address: '123 Main St' };
+ * const cleanedObject = removeUndefinedObject(originalObject);
+ * // Kết quả: { name: 'John', address: '123 Main St' }
+ *
+ * // Sử dụng trong thực tế:
+ * const input = { field1: 'value1', field2: null, field3: 'value3' };
+ * const result = removeUndefinedObject(input);
+ * // result sẽ là { field1: 'value1', field3: 'value3' }
+ */
+const removeUndefinedObject = obj => {
+  Object.keys(obj).forEach( key => {
+      if(obj[key] == null) {
+          delete obj[key];
+      }
+  })
+  return obj
+}
+
+module.exports = { getInfoData, getSelectData, getUnSelectData, removeUndefinedObject };   
