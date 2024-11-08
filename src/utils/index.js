@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const { default: mongoose } = require("mongoose");
 
 /**
  * Lấy các trường cụ thể từ một đối tượng.
@@ -82,4 +83,6 @@ const removeUndefinedObject = obj => {
   return obj
 }
 
-module.exports = { getInfoData, getSelectData, getUnSelectData, removeUndefinedObject };   
+const convertToObjectId = id => new mongoose.Types.ObjectId(id);
+
+module.exports = { getInfoData, getSelectData, getUnSelectData, removeUndefinedObject, convertToObjectId };   

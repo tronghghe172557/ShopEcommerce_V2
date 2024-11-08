@@ -6,7 +6,7 @@ const COLLECTION_NAME = "Discounts";
 
 const discountSchema = new Schema(
   {
-    discountName: {
+    discount_name: {
       type: String,
       required: true,
     },
@@ -80,5 +80,5 @@ const discountSchema = new Schema(
 );
 //Export the model
 module.exports = {
-  inventory: mongoose.model(DOCUMENT_NAME, inventorySchema),
+  inventory: mongoose.model(DOCUMENT_NAME, discountSchema),
 };
