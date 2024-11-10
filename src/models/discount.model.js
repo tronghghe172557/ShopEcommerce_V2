@@ -16,7 +16,7 @@ const discountSchema = new Schema(
     },
     discount_type: {
       type: String,
-      required: "fixed_amount", // percentage
+      default: "fixed_amount", // percentage
     },
     discount_value: {
       type: Number, // 10.000 , 10%
@@ -37,6 +37,11 @@ const discountSchema = new Schema(
     },
     discount_max_uses: {
       // số lần sử dụng tối đa
+      type: Number,
+      required: true,
+    },
+    discount_uses_count: {
+      // số lần discount được sử dụng hiện tại
       type: Number,
       required: true,
     },
@@ -72,6 +77,10 @@ const discountSchema = new Schema(
       type: Array,
       default: [],
     },
+    discount_is_deleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -79,6 +88,4 @@ const discountSchema = new Schema(
   }
 );
 //Export the model
-module.exports = {
-  inventory: mongoose.model(DOCUMENT_NAME, discountSchema),
-};
+module.exports = mongoose.model(DOCUMENT_NAME, discountSchema)

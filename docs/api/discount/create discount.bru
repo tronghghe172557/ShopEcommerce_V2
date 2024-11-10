@@ -1,0 +1,39 @@
+meta {
+  name: create discount
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3052/v1/api/discount/
+  body: json
+  auth: none
+}
+
+headers {
+  x-api-key: 2e9ccd103016593dd62dcfc939525d9966581d371d132e2e64d0c77bcece35720c6d528616362697ee10c83ec7659fb5e35131ccecd7dcaa317cb1e698abb133
+  x-client-id: 6722458f69c66802e2f0cfae
+  authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzIyNDU4ZjY5YzY2ODAyZTJmMGNmYWUiLCJlbWFpbCI6InRyb25nQGdtYWlsLmNvbSIsImlhdCI6MTczMTIzMDAxNCwiZXhwIjoxNzMxNDAyODE0fQ.cSVKw44sYq2sUyJV5Gwe_TyUjUB7mGo22qcjcztrosc
+}
+
+body:json {
+  {
+    "name": "name fixed amount",
+    "description": "description",
+    "type": "percentage",
+    "value": 30000,
+    "max_value": 30000,
+    "code": "SHOP-1122",
+    "start_date": "2024-11-12",
+    "end_date": "2024-11-15",
+    "max_uses": 100,
+    "uses_count": 0,
+    "users_used": [],
+    "max_uses_per_user": 1,
+    "min_order_value": 200000,
+    "created_by": {},
+    "is_active": true,
+    "applies_to": "all",
+    "product_ids": ["672ad90172ac34cf9c6df41d", "672b1bb229842920dda17277"]
+  }
+}

@@ -1,3 +1,4 @@
+const { convertToObjectId } = require("../../utils");
 const discountModel = require("../discount.model");
 
 const foundDiscountByShopIdAndCode = async (shopId, code) => {
@@ -7,7 +8,8 @@ const foundDiscountByShopIdAndCode = async (shopId, code) => {
       discount_code: code,
       discount_shopId: convertToObjectId(shopId),
     })
-    .lean();
+    .lean()
+    .exec();
 
   return foundDiscount;
 };
