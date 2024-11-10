@@ -36,13 +36,13 @@ const findAllDocumentSelect = async ({
     .sort(sortBy)
     .skip(skip)
     .limit(limit)
-    .select(getSelectData(select))
+    .select(getSelectData({ fields: select }))
     .lean();
 
   return documents;
 };
 
 module.exports = {
-    findAllDocumentUnSelect,
-    findAllDocumentSelect,
+  findAllDocumentUnSelect,
+  findAllDocumentSelect,
 };

@@ -16,7 +16,7 @@ const {
   foundDiscountByShopIdAndCode,
 } = require("../models/repositories/discount.repo");
 const {
-  findAllDocumentUnSelect,
+  findAllDocumentSelect,
 } = require("../models/repositories/common.repo");
 const { findAllProduct } = require("./product.service.xxx");
 
@@ -156,14 +156,14 @@ class DiscountService {
         Get all discount code shop
     */
   static async getAllDiscountCodesForShop({ shopId, limit, page }) {
-    const discounts = await findAllDocumentUnSelect({
+    const discounts = await findAllDocumentSelect({
       limit: +limit,
       page: +page,
       filter: {
         discount_shopId: shopId,
         discount_is_active: true,
       },
-      unSelect: ["__v"],
+      select: ["discount_name", "discount_code", "discount_shopId"],
       model: Discount,
     });
 
@@ -199,6 +199,8 @@ class DiscountService {
       discount_min_order_value,
       discount_max_user_per_user,
       discount_users_used,
+      discount_type,
+      discount_value,
     } = foundDiscount;
 
     // check discount code is active
@@ -214,7 +216,7 @@ class DiscountService {
     }
 
     // check date
-    if (new Date() < discount_start_date || new Date() > discount_end_date) {
+    if (new Date() > discount_start_date || new Date() > discount_end_date) {
       throw new NotFoundError("Date is invalid in getDiscountAmount");
     }
 

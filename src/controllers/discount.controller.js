@@ -19,7 +19,11 @@ class DiscountController {
     new SuccessResponse({
       message: "Get all discount for shop success in getAllDiscountCodeForShop",
       metadata: await DiscountService.getAllDiscountCodesForShop({
-        ...req.body,
+        shopId: req.user._id,
+        limit: req.query.limit
+          ? Number.parseInt(req.query.limit)
+          : DISCOUNT_LIMIT,
+        page: req.query.page ? Number.parseInt(req.query.page) : DISCOUNT_PAGE,
       }),
     }).send(res);
   };
