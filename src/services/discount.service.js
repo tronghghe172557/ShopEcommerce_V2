@@ -42,13 +42,11 @@ class DiscountService {
     } = payload;
 
     // check
-    console.log("start_date::", new Date(start_date) );
-    console.log("date::", new Date() );
+    console.log("start_date::", new Date(start_date));
+    console.log("date::", new Date());
     console.log(new Date() > new Date(start_date));
     if (new Date() > new Date(start_date) || new Date() > new Date(end_date)) {
-      throw new BadRequestError(
-        "Time is not valid in DiscountService"
-      );
+      throw new BadRequestError("Time is not valid in DiscountService");
     }
 
     // create index for discount code
@@ -90,8 +88,8 @@ class DiscountService {
     code,
     shopId,
     userId,
-    limit = 50,
-    page = 1,
+    limit,
+    page,
   }) {
     // create index for discount code
     const foundDiscount = await foundDiscountByShopIdAndCode(shopId, code);
@@ -294,7 +292,7 @@ class DiscountService {
   /*
     user cancel discount code
   */
- static async cancelDiscountCode({ shopId, codeId, userId }) {
+  static async cancelDiscountCode({ shopId, codeId, userId }) {
     const foundDiscount = await foundDiscountByShopIdAndCode(shopId, codeId);
 
     if (!foundDiscount) {
@@ -310,7 +308,7 @@ class DiscountService {
           discount_users_used: {
             userId: userId,
           },
-        }, 
+        },
         $inc: {
           discount_max_uses: 1, // increase 1
           discount_uses_count: -1, // decrease 1
@@ -326,7 +324,7 @@ class DiscountService {
     }
 
     return discountUpdated;
- }
+  }
 }
 
 module.exports = DiscountService;

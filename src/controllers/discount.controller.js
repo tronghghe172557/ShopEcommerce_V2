@@ -1,6 +1,9 @@
 const DiscountService = require("../services/discount.service");
 const { SuccessResponse } = require("../core/success.response");
-
+const {
+  DISCOUNT_LIMIT,
+  DISCOUNT_PAGE,
+} = require("../constant/discount.constant");
 class DiscountController {
   createDiscountCode = async (req, res, next) => {
     new SuccessResponse({
@@ -28,6 +31,10 @@ class DiscountController {
         "Get all discount by product success in getAllDiscountCodeWithProducts",
       metadata: await DiscountService.getAllDiscountCodesWithProduct({
         ...req.query,
+        limit: req.query.limit
+          ? Number.parseInt(req.query.limit)
+          : DISCOUNT_LIMIT,
+        page: req.query.page ? Number.parseInt(req.query.page) : DISCOUNT_PAGE,
       }),
     }).send(res);
   };
