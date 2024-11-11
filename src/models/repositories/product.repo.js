@@ -1,6 +1,6 @@
 const { Types } = require("mongoose");
 const { product, electronic, clothing, furniture } = require("../../models/product.model");
-const { getSelectData, getUnSelectData } = require("../../utils");
+const { getSelectData, getUnSelectData, convertToObjectId } = require("../../utils");
 
 // GET + FIND //
 const findAllDraftProduct = async ({ query, limit, skip }) => {
@@ -47,6 +47,10 @@ const findProduct = async ({ product_id, unselect }) => {
     .select(getUnSelectData(unselect));
 
     return productFound
+}
+
+const findProductById = async ({ product_id }) => {
+    return await product.findById( convertToObjectId(product_id) )
 }
 // END GET + FIND //
 
@@ -131,4 +135,5 @@ module.exports = {
     findProduct,
     updateProductById,
     updateNestedObjectParse,
+    findProductById,
 }
