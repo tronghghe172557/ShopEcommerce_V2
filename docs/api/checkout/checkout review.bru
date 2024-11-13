@@ -1,0 +1,50 @@
+meta {
+  name: checkout review
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3052/v1/api/checkout/review
+  body: json
+  auth: none
+}
+
+headers {
+  x-api-key: 2e9ccd103016593dd62dcfc939525d9966581d371d132e2e64d0c77bcece35720c6d528616362697ee10c83ec7659fb5e35131ccecd7dcaa317cb1e698abb133
+}
+
+body:json {
+  {
+    "cartId": "67320dd4c623a9e83040c4f4",
+    "userId": "11",
+    "shop_order_ids": [
+      {
+        "shopId": "6722458f69c66802e2f0cfae",
+        "shop_discounts": [{
+          "shopId" : "6722458f69c66802e2f0cfae",
+          "discountId": "67307e5a540a65669f34a672",
+          "codeId": "SHOP-1133"
+        }],
+        "item_products": [
+          {
+            "price": 1234, 
+            "quantity": 1,
+            "productId": "672b1bb229842920dda17277"
+          }
+        ]
+      }, 
+      {
+        "shopId": "67232dc34e652cfb2c351bda",
+        "shop_discounts": [],
+        "item_products": [
+          {
+            "price": 1234, 
+            "quantity": 1,
+            "productId": "6734ab4d52f7ef13b431c041"
+          }
+        ]
+      }
+    ]
+  }
+}

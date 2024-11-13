@@ -216,7 +216,7 @@ class DiscountService {
     }
 
     // check date
-    if (new Date() > discount_start_date || new Date() > discount_end_date) {
+    if (new Date() < discount_start_date || new Date() > discount_end_date) {
       throw new NotFoundError("Date is invalid in getDiscountAmount");
     }
 
@@ -226,6 +226,87 @@ class DiscountService {
       // get total price of products
       totalOrder = products.reduce((acc, product) => {
         return acc + product.product_price * product.product_quantity;
+      }, 0);
+
+      // check total order
+      if (totalOrder < discount_min_order_value) {
+        throw new NotFoundError(
+          `Discount requires a minium order value of ${discount_min_order_value} getDiscountAmount`
+        );
+      }
+    }
+
+    // check max users
+    if (discount_max_user_per_user > 0) {
+      const userUsedDiscount = discount_users_used.filter(
+        (user) => user.userId == userId
+      );
+
+      if (userUsedDiscount.length >= discount_max_user_per_user) {
+        throw new NotFoundError(
+          `Discount code has been used ${discount_max_user_per_user} times in getDiscountAmount`
+        );
+      }
+    }
+
+    // check discount is fixed amount or percentage
+    const amount =
+      discount_type == "fixed_amount"
+        ? discount_value
+        : (totalOrder * discount_value) / 100;
+
+    return {
+      totalOrder,
+      discount: amount,
+      totalPrice: totalOrder - amount,
+    };
+  }
+
+  static async getDiscountAmountV2({ codeId, shopId, userId, products }) {
+    const foundDiscount = await foundDiscountByShopIdAndCode(shopId, codeId);
+
+    if (!foundDiscount) {
+      throw new NotFoundError(
+        "Discount code doesn't not exist in getDiscountAmount"
+      );
+    }
+
+    const {
+      discount_is_active,
+      discount_max_uses,
+      discount_start_date,
+      discount_end_date,
+      discount_min_order_value,
+      discount_max_user_per_user,
+      discount_users_used,
+      discount_type,
+      discount_value,
+    } = foundDiscount;
+
+    // check discount code is active
+    if (!discount_is_active) {
+      throw new NotFoundError(
+        "Discount code is not active in getDiscountAmount"
+      );
+    }
+
+    // check discount max user per user
+    if (!discount_max_uses) {
+      throw new NotFoundError("Discount has out of use in getDiscountAmount");
+    }
+
+    // check date
+    if (new Date() < discount_start_date || new Date() > discount_end_date) {
+      throw new NotFoundError("Date is invalid in getDiscountAmount");
+    }
+
+    // check min order value
+    let totalOrder = 0;
+    if (discount_min_order_value > 0) {
+      console.log("products::", products);
+      // get total price of products
+      totalOrder = products.reduce((acc, product) => {
+        return acc + product.price * product.quantity;
       }, 0);
 
       // check total order
