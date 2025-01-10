@@ -8,6 +8,12 @@ const dev = {
     port: process.env.DEV_DB_POST  || 27017,
     name: process.env.DEV_DB_NAME  || 'ShopDEV3',
   },
+  redis: {
+    username: process.env.CLOUD_REDIS_NAME || "default",
+    password: process.env.CLOUD_REDIS_PASSWORD,
+    host: process.env.CLOUD_REDIS_HOST,
+    port: process.env.CLOUD_REDIS_PORT,
+  },
 };
 
 // lv01

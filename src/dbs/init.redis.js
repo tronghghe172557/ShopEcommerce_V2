@@ -1,12 +1,22 @@
 const { createClient } = require("redis");
-
+const {
+  redis: { username, password, port, host },
+} = require("../configs/config.mongodb");
+const client = createClient({
+  username: username,
+  password: password,
+  socket: {
+    host: host,
+    port: port,
+  },
+});
 class RedisConnection {
   constructor() {
     if (RedisConnection.instance) {
       return RedisConnection.instance; // Nếu đã có instance thì trả về instance đó
     }
 
-    this.redisClient = createClient();
+    this.redisClient = client;
 
     // Lắng nghe lỗi từ Redis
     this.redisClient.on("error", (err) => {
