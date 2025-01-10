@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // init db
 require("./dbs/init.mongodb.lvPro");
+require("./dbs/init.redis");
 // checkOverload();
 // init routes
 app.use("", require("./routes/index"));

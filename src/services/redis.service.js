@@ -1,24 +1,20 @@
-const redis = require("redis");
-const { promisify } = require("util");
+const { createClient } = require("redis");
+const { reservationInventory } = require("../models/repositories/inventory.repo");
 
-// Tạo một client Redis để kết nối đến Redis Server
-const redisClient = redis.createClient();
+// Tạo một client Redis
+const redisClient = createClient();
 
-// Tạo các hàm promisify để chuyển hàm callback thành hàm promise
-const pexpire = promisify(redisClient.pexpire).bind(redisClient);
-const setnxAsync = promisify(redisClient.setnx).bind(redisClient);
-
-// Hàm acquireLock để lấy khóa phân tán
+// Các hàm để thực hiện hành động trên Redis
 const acquireLock = async (productId, quantity, cartId) => {
   const key = `lock_v2023_${productId}`;
-  const retrtTime = 10; // số lần thử lại
-  const expireTime = 3000; // 3s
+  const retryTime = 10; // số lần thử lại
+  const expireTime = 3; // 3s
 
-  for (let i = 0; i < retrtTime; i++) {
+  for (let i = 0; i < retryTime; i++) {
     // Tạo một key, thằng nào tạo được key đó sẽ được phép thực hiện thanh toán
-    const result = await setnxAsync(key, cartId);
+    const result = await redisClient.setNX(key, cartId); // Sử dụng setNX với API mới
     console.log(`result:: ${result}`);
-    if (result === 1) {
+    if (result) {
       // Thao tác với inventory -> kho
       const isReservation = await reservationInventory({
         productId,
@@ -27,11 +23,12 @@ const acquireLock = async (productId, quantity, cartId) => {
       });
 
       if (isReservation.modifiedCount > 0) {
-        await pexpire(key, expireTime);
+        await redisClient.expire(key, expireTime); // Đặt thời gian hết hạn cho khóa
         return key;
       }
-      return key;
+      return null;
     } else {
+      // Đợi 50ms trước khi thử lại
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
   }
@@ -39,8 +36,7 @@ const acquireLock = async (productId, quantity, cartId) => {
 
 // Hàm releaseLock để giải phóng khóa phân tán
 const releaseLock = async (keyLock) => {
-  const delAsynKey = promisify(redisClient.del).bind(redisClient);
-  return await delAsynKey(keyLock);
+  return await redisClient.del(keyLock);
 };
 
 module.exports = {
