@@ -19,7 +19,8 @@ const insertInventory = async ({
 const reservationInventory = async ({ productId, quantity, cartId }) => {
   const query = {
     inven_productId: convertToObjectId(productId),
-    inven_stock: { $gte: quantity }, // stock >= quantity
+    // $gte: greater than or equal
+    inven_stock: { $gte: quantity }, // stock >= quantity 
   }, updateSet = {
     $inc: { inven_stock: -quantity },
     $push: { 

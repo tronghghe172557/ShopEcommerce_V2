@@ -1,8 +1,16 @@
 const { createClient } = require("redis");
-const { reservationInventory } = require("../models/repositories/inventory.repo");
+const {
+  reservationInventory,
+} = require("../models/repositories/inventory.repo");
 
 // Tạo một client Redis
 const redisClient = createClient();
+
+/*
+  1. Sử dụng khoá phân tán để khoá sản phẩm khi có nhiều người thực hiện order cùng 1 sản phẩm cùng 1 thời điểm
+  2. Sử dụng premistic (khoá bi quan) để khoá sản phẩm
+  3. Sử dụng redis để lưu khoá phân tán và giải phóng khoá (khi thực hiện xong mục đích)
+*/
 
 // Các hàm để thực hiện hành động trên Redis
 const acquireLock = async (productId, quantity, cartId) => {
@@ -12,9 +20,16 @@ const acquireLock = async (productId, quantity, cartId) => {
 
   for (let i = 0; i < retryTime; i++) {
     // Tạo một key, thằng nào tạo được key đó sẽ được phép thực hiện thanh toán
-    const result = await redisClient.setNX(key, cartId); // Sử dụng setNX với API mới
+    const result = await redisClient.set(key, {
+      NX: true, // nx = not exist
+      EX: expireTime, // ex = expire
+    }); // Sử dụng set với tùy chọn NX và EX
     console.log(`result:: ${result}`);
-    if (result) {
+    if (result) { 
+      /*
+        Nếu lấy được khoá -> thực hiện hành động
+        Thực hiện các hành động với kho
+      */
       // Thao tác với inventory -> kho
       const isReservation = await reservationInventory({
         productId,
@@ -22,12 +37,20 @@ const acquireLock = async (productId, quantity, cartId) => {
         cartId,
       });
 
-      if (isReservation.modifiedCount > 0) {
-        await redisClient.expire(key, expireTime); // Đặt thời gian hết hạn cho khóa
+      if (isReservation.modifiedCount > 0) {  // modifiedCount > 0 update thành công
+        // Đặt thời gian hết hạn cho khóa -> đảm bảo không bị chết khóa
+        await redisClient.expire(key, expireTime); 
         return key;
       }
       return null;
-    } else {
+    } else { 
+      /*
+        nếu không lấy được khoá
+        TH1: 
+          Khoá được được 1 người sử dụng -> chờ hệ thống xử lí xong hành động và giải phóng khoá       
+        TH2:
+          Khoá bị hết hạn -> thử lại
+      */
       // Đợi 50ms trước khi thử lại
       await new Promise((resolve) => setTimeout(resolve, 50));
     }

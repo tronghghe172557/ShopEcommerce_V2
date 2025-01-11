@@ -137,20 +137,33 @@ class checkOutService {
       // check product that have in stock or not
       const products = shop_order_ids_new.flatMap( order => order.item_products );
       console.log("[1]::", products);
+      const acquireProduct = [];
 
+      /*
+        1. Duyệt qua từng sản phẩm trong giỏ hàng
+        2. Thực hiện tạo khoá -> đảm bảo chỉ có 1 khoá 1 người trong cùng 1 thời điểm có thể thao tác được với sản phẩm đó
+        3. Nếu tạo khoá thành công -> thực hiện thao tác với sản phẩm trong hàm (acquireLock)
+        4. Nếu thao tác thành công -> giải phóng khoá
+      */
       for(let i = 0; i < products.length; i++) {
         const { productId, quantity } = products[i];
         const keyLock = await acquireLock(productId, quantity, cartId);
         console.log("[2]::", keyLock);
         //
-        acquireProduct.push(keyLock);
+        acquireProduct.push(keyLock); // ghi lại các sản phẩm đã được thao tác
         if(keyLock) {
           await releaseLock(keyLock);
         }
       }
 
       // check 1 san pham het hang trong inventory
-      if(acireProduct.includes(false)) {
+      /*
+        Ví dụ order 5 sản phẩm, sản phẩm thứ 3 bị false
+        -> nghĩa là sản phẩm thứ 1, 2 đã bị trừ đi stock (được đặt trước)
+        -> đến sản phẩm thứ 3 bị lỗi -> thì người dùng nhận được là thông báo sản phẩm hết hàng
+        -> vậy thì câu hỏi: Người dùng chưa ORDER được NHƯNG sản phẩm 1, 2 đã bị trừ stock?????
+      */
+      if(acquireProduct.includes(false)) {
         throw new BadRequestError("Product is out of stock");
       }
 
