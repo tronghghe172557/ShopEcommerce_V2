@@ -1,4 +1,4 @@
-const { NotFoundError } = require("../core/error.response");
+const { NotFoundError, BadRequestError } = require("../core/error.response");
 const Comment = require("../models/comment.model");
 const { convertToObjectId } = require("../utils/index");
 /*
@@ -25,27 +25,33 @@ class CommentService {
     if (parentCommentId) {
       // reply comment
       const parentComment = await Comment.findById(parentCommentId);
-      if(!parentComment) {
+      if (!parentComment) {
         throw new NotFoundError("Not found parent comment");
       }
 
       rightValue = parentComment.comment_right;
-      
+
       // update many
       // update all comment if comment_right >= rightValue
-      await Comment.updateMany({
-        comment_productId: convertToObjectId(productId),
-        comment_right: { $gte: rightValue },
-      }, {
-        $inc: { comment_right: 2 },
-      })
+      await Comment.updateMany(
+        {
+          comment_productId: convertToObjectId(productId),
+          comment_right: { $gte: rightValue },
+        },
+        {
+          $inc: { comment_right: 2 },
+        }
+      );
 
-      await Comment.updateMany({
-        comment_productId: convertToObjectId(productId),
-        comment_left: { $gt: rightValue },
-      }, {
-        $inc: { comment_left: 2 },
-      })
+      await Comment.updateMany(
+        {
+          comment_productId: convertToObjectId(productId),
+          comment_left: { $gt: rightValue },
+        },
+        {
+          $inc: { comment_left: 2 },
+        }
+      );
     } else {
       // comment is root
       const maxRightValue = await Comment.findOne(
@@ -59,16 +65,67 @@ class CommentService {
         rightValue = maxRightValue.comment_right + 1;
       } else {
         rightValue = 1;
-      } 
+      }
     }
 
-    // insert 
-    comment.comment_left = rightValue; 
-    comment.comment_right = rightValue + 1 ;
-
+    // insert
+    comment.comment_left = rightValue;
+    comment.comment_right = rightValue + 1;
 
     await comment.save();
     return comment;
+  }
+
+  static async getCommentByParentId({
+    productId,
+    parentCommentId = null,
+    limit = 50,
+    offset = 0, // skip
+  }) {
+    console.log(parentCommentId)
+    if (parentCommentId) {
+      const parent = await Comment.findById(parentCommentId);
+      if (!parent) {
+        throw new NotFoundError("Not found parent comment");
+      }
+
+      //
+      const comments = await Comment.find({
+        comment_productId: convertToObjectId(productId),
+        comment_left: { $gt: parent.comment_left },
+        comment_right: { $lte: parent.comment_right },
+      })
+        .select({
+          comment_content: 1,
+          comment_userId: 1,
+          comment_parentId: 1,
+          comment_left: 1,
+          comment_right: 1,
+        })
+        .sort({
+          comment_left: 1,
+        });
+
+      return comments;
+    }
+
+    //
+    const comments = await Comment.find({
+      comment_productId: convertToObjectId(productId),
+      comment_parentId: parentCommentId,
+    })
+      .select({
+        comment_content: 1,
+        comment_userId: 1,
+        comment_parentId: 1,
+        comment_left: 1,
+        comment_right: 1,
+      })
+      .sort({
+        comment_left: 1,
+      });
+
+    return comments;
   }
 }
 

@@ -8,6 +8,17 @@ class CommentController {
             metadata: await CommentService.addComment(req.body),
         }).send(res);
     }
+
+    getCommentByProductIdService = async (req, res, next) => {
+        console.log(req.query);
+        new SuccessResponse({
+            message: "Get comment success in getCommentByParentId",
+            metadata: await CommentService.getCommentByParentId({
+                productId: req.query.productId,
+                parentCommentId: req.query.parentCommentId,
+            }),
+        }).send(res);
+    }
 }
 
 module.exports = new CommentController(); // trả về các method của obj đó

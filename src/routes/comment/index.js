@@ -5,5 +5,6 @@ const { asyncHandler } = require("../../helpers/asyncHandle");
 
 //
 router.post("/", asyncHandler(CommentController.addCommentService));
+router.get("/", asyncHandler(CommentController.getCommentByProductIdService));
 
 module.exports = router;
