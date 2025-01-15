@@ -1,5 +1,6 @@
 const { NotFoundError, BadRequestError } = require("../core/error.response");
 const Comment = require("../models/comment.model");
+const { product } = require("../models/product.model");
 const { convertToObjectId } = require("../utils/index");
 /*
     1. add comment
@@ -82,7 +83,7 @@ class CommentService {
     limit = 50,
     offset = 0, // skip
   }) {
-    console.log(parentCommentId)
+    console.log(parentCommentId);
     if (parentCommentId) {
       const parent = await Comment.findById(parentCommentId);
       if (!parent) {
@@ -126,6 +127,53 @@ class CommentService {
       });
 
     return comments;
+  }
+
+  // cong thuc: right - left + 1 => số lượng comment
+  static async deleteComment({ commentId, productId }) {
+    const findProduct = await product.findById(convertToObjectId(productId));
+    if (!findProduct) {
+      throw new NotFoundError("Not found product in deleteComment");
+    }
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      throw new NotFoundError("Not found comment in deleteComment");
+    }
+
+    // 1. define left, right
+    const left = comment.comment_left;
+    const right = comment.comment_right;
+
+    // 2. count width
+    const width = right - left + 1;
+
+    // 3. delete comment in range width
+    await Comment.deleteMany({
+      comment_productId: convertToObjectId(productId),
+      comment_left: { $gte: left, $lte: right }, // delete comment in range left, right
+    });
+
+    // 4. update left, right
+    await Comment.updateMany(
+      {
+        comment_productId: convertToObjectId(productId),
+        comment_right: { $gt: right }, // gt is greater than, count comment_right > right
+      },
+      {
+        $inc: { comment_right: -width }, // decrease comment_right by width
+      }
+    );
+
+    await Comment.updateMany(
+      {
+        comment_productId: convertToObjectId(productId),
+        comment_left: { $gt: right }, // gt is greater than, count comment_left > right
+      },
+      {
+        $inc: { comment_left: -width },
+      }
+    );
   }
 }
 

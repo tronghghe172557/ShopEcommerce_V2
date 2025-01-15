@@ -1,0 +1,20 @@
+meta {
+  name: Get Comment
+  type: http
+  seq: 2
+}
+
+delete {
+  url: http://localhost:3052/v1/api/comment?productId=672ad90172ac34cf9c6df41d&commentId=6787c13f94c25d61ea389815
+  body: json
+  auth: none
+}
+
+params:query {
+  productId: 672ad90172ac34cf9c6df41d
+  commentId: 6787c13f94c25d61ea389815
+}
+
+headers {
+  x-api-key: 2e9ccd103016593dd62dcfc939525d9966581d371d132e2e64d0c77bcece35720c6d528616362697ee10c83ec7659fb5e35131ccecd7dcaa317cb1e698abb133
+}
