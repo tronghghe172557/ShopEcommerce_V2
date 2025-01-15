@@ -8,7 +8,12 @@ const client = createClient({
   socket: {
     host: host,
     port: port,
+    connectTimeout: 10000, // Thời gian timeout (ms)
   },
+  tls: {
+    // SSL/TLS configuration
+    rejectUnauthorized: false,  // For self-signed certificates, set to true in production
+  }
 });
 class RedisConnection {
   constructor() {
