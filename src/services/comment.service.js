@@ -7,6 +7,18 @@ const { convertToObjectId } = require("../utils/index");
     2. get list comment
     3. delete comment
 */
+
+// Comment 1
+//   ├── Comment 2
+//   └── Comment 3
+//       ├── Comment 4
+//       └── Comment 5
+
+// Comment 1: left = 1, right = 10
+//   ├── Comment 2: left = 2, right = 3
+//   └── Comment 3: left = 4, right = 9
+//       ├── Comment 4: left = 5, right = 6
+//       └── Comment 5: left = 7, right = 8
 class CommentService {
   static async addComment({
     productId,
@@ -83,7 +95,7 @@ class CommentService {
     limit = 50,
     offset = 0, // skip
   }) {
-    console.log(parentCommentId);
+
     if (parentCommentId) {
       const parent = await Comment.findById(parentCommentId);
       if (!parent) {

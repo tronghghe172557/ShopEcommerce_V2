@@ -3,6 +3,7 @@ const { BadRequestError } = require('../core/error.response');
 const { findAllDraftProduct, publishProductByShop, findAllPublishForShop, unPublishProductByShop, searchProductsByUser, findAllProduct, findProduct, updateProductById, updateNestedObjectParse } = require("../models/repositories/product.repo");
 const { removeUndefinedObject } = require("../utils");
 const { insertInventory } = require("../models/repositories/inventory.repo");
+const { pushNotification } = require("./notification.service");
 
 // define Factory class to create product
 class ProductFactory {
@@ -107,7 +108,18 @@ class Product {
                 stock: this.product_quantity
             })
         }
-
+        // push noti to system collection -> notify to user
+        // dùng cơ chế bất đồng bộ để làm -> sau đó sẽ dùng message and queue để xử lý -> h thì chưa
+        pushNotification({
+            type: 'SHOP-001',
+            receivedId: 1, // cho la 1 boi vi chua co user trong model
+            senderId: this.product_shop,
+            noti_options: { 
+                productName: this.product_name,
+                shop_name: this.product_shop
+            }
+        }).then(res => console.log(`Push notification success: ${res} in product.service.js`))
+        .catch(err => console.log(`Push notification error: ${err}  in product.service.js`))
         return newProduct
     }
 
